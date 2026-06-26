@@ -1,0 +1,56 @@
+MANAGER DE BOTÃO V4 — PACOTE IMPLEMENTADO
+
+Este pacote contém uma versão funcional em um único index.html, pronto para GitHub Pages.
+
+INCLUSO NO INDEX:
+- Menu principal estilo jogo de futebol.
+- Modo Carreira.
+- Carreira Clássica:
+  - o usuário escolhe a liga/país;
+  - o jogo oferece propostas compatíveis com reputação;
+  - se começar do zero, não pega clube gigante.
+- Carreira Personalizada:
+  - escolhe liga;
+  - escolhe clube;
+  - escolhe perfil;
+  - ajusta reputação;
+  - ajusta dinheiro pessoal;
+  - ajusta verba do clube.
+- Dashboard.
+- Elenco.
+- Mercado básico.
+- Calendário de carreira 2026 até 2060.
+- Temporadas europeias e anuais.
+- Tabela de liga com pontos.
+- Copa nacional simplificada.
+- Competição continental simplificada.
+- Catálogo de competições:
+  Champions League, Europa League, Conference League,
+  Libertadores, Sul-Americana, CONCACAF Champions Cup,
+  AFC Champions League Elite e AFC Champions League Two.
+- Simulação de Copa do Mundo a cada 4 anos como evento global.
+- Evolução de jogadores.
+- Envelhecimento.
+- Aposentadorias.
+- Regens/jovens da base.
+- Propostas e histórico do treinador em estrutura de carreira.
+- Save local via localStorage.
+- Versão mobile e desktop no mesmo index.
+- Campo 2D visto de cima.
+- Jogadores como bolinhas.
+- Bola animada.
+- Eventos de partida:
+  gol, assistência, escanteio, lateral, falta, amarelo,
+  vermelho, pênalti, impedimento e VAR.
+- Opção de jogar a partida em tempo real ou ir direto ao resultado.
+
+OBSERVAÇÃO IMPORTANTE:
+A base de clubes usa nomes reais e alguns clubes demo, mas os elencos são gerados automaticamente.
+Os atributos e overalls reais jogador por jogador ainda precisam de uma etapa de alimentação de dados,
+pois isso exige pesquisa/validação liga por liga e jogador por jogador.
+O motor já está preparado para receber essa base real depois.
+
+COMO USAR:
+1. Suba o index.html na raiz do repositório.
+2. Ative GitHub Pages.
+3. Abra o site.

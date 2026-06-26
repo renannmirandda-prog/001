@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Manager de Botão V4</title>
+<style>
+:root{
+  --bg:#07111f;--bg2:#0c1b2e;--panel:#10223a;--panel2:#162d4a;--line:rgba(255,255,255,.12);
+  --text:#f3f7ff;--muted:#9fb0c7;--green:#24d18b;--yellow:#ffe066;--red:#ff4d6d;--blue:#4dabf7;
+  --pitch1:#237a46;--pitch2:#2f8a52;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:radial-gradient(circle at top left,rgba(36,209,139,.22),transparent 30%),linear-gradient(135deg,#050b14,#07111f 55%,#09172a);overflow:hidden}
+button,input,select{font-family:inherit;border:1px solid var(--line);border-radius:12px;padding:9px 11px;background:linear-gradient(180deg,#1b385c,#10223a);color:var(--text);font-weight:800;outline:none}
+input,select{width:100%}
+button{cursor:pointer}button:hover{filter:brightness(1.12)}button:disabled{opacity:.45;cursor:not-allowed}
+.primary{background:linear-gradient(180deg,#2af09a,#16b96c);color:#03140c}.warn{background:linear-gradient(180deg,#ffe066,#ffb703);color:#231600}.danger{background:linear-gradient(180deg,#ff6882,#df3657);color:#fff}.ghost{background:rgba(255,255,255,.06)}
+.screen{display:none;height:100vh;overflow:hidden}.screen.active{display:block}.hide{display:none!important}
+label{display:grid;gap:5px;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.topbar{height:62px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);background:rgba(7,17,31,.94);backdrop-filter:blur(12px)}
+.logo{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--green),var(--yellow));color:#06130c;font-weight:950}
+.top-left{display:flex;align-items:center;gap:10px}.top-title b{display:block}.top-title small{color:var(--muted);font-size:11px}.top-actions{display:flex;gap:7px;flex-wrap:wrap}.top-actions button{font-size:12px;padding:8px 10px}
+.menu{min-height:100vh;display:grid;grid-template-columns:1.15fr .85fr;gap:20px;padding:24px}.hero,.menu-card,.setup-card,.panel{border:1px solid var(--line);background:linear-gradient(180deg,rgba(16,34,58,.92),rgba(8,18,32,.94));box-shadow:0 18px 50px rgba(0,0,0,.35);border-radius:26px}
+.hero{padding:28px;display:flex;flex-direction:column;justify-content:space-between}.hero h1{font-size:52px;margin:0 0 8px;letter-spacing:-2px}.hero p{color:var(--muted);line-height:1.45;max-width:680px}
+.tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.tag,.pill{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:6px 9px;background:rgba(255,255,255,.06);color:var(--muted);font-size:11px;font-weight:800}
+.menu-card{padding:18px;display:flex;flex-direction:column;justify-content:center;gap:10px}.menu-btn{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;text-align:left;min-height:72px;padding:14px;border-radius:18px;background:rgba(255,255,255,.06)}.menu-btn .ico{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,var(--green),var(--blue));color:#03140c}.menu-btn small{color:var(--muted)}.locked{opacity:.55}
+.app{height:100vh;display:grid;grid-template-rows:62px 1fr;overflow:hidden}.setup-wrap{height:calc(100vh - 62px);overflow:auto;padding:14px;display:grid;place-items:center}.setup-card{width:min(1160px,100%);padding:20px}.setup-card h1{margin:0 0 8px}.setup-card p{color:var(--muted);line-height:1.45}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.stack{display:grid;gap:10px}
+.choice{border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.055);padding:14px;cursor:pointer}.choice.active{outline:2px solid var(--green);background:rgba(36,209,139,.12)}.proposal{border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.055);padding:12px;cursor:pointer}.proposal.selected{outline:2px solid var(--green)}
+.layout{height:calc(100vh - 62px);display:grid;grid-template-columns:285px minmax(420px,1fr) 350px;gap:10px;padding:10px;overflow:hidden}.panel{border-radius:22px;min-height:0;overflow:hidden}.panel-head{height:54px;padding:12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(255,255,255,.035)}.panel-head h2{font-size:14px;margin:0}.panel-body{height:calc(100% - 54px);overflow:auto;padding:12px}
+.metric{border:1px solid var(--line);border-radius:17px;background:rgba(255,255,255,.055);padding:11px}.metric small{color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:900}.metric b{display:block;font-size:20px;margin-top:3px}.news,.row{border:1px solid rgba(255,255,255,.1);border-radius:14px;background:rgba(255,255,255,.05);padding:9px;font-size:12px}.row{display:grid;grid-template-columns:42px 1fr 34px;gap:8px;align-items:center}.pos{width:38px;height:30px;border-radius:10px;display:grid;place-items:center;background:rgba(36,209,139,.15);color:var(--yellow);font-weight:950;font-size:11px}.ov{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:white;color:#111;font-weight:950;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}th{font-size:10px;color:var(--muted);text-transform:uppercase}.user{background:rgba(36,209,139,.13)}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}.tabs button{font-size:11px;padding:7px 8px}
+.mobile-nav{display:none}
+
+/* Match */
+.match-layout{height:calc(100vh - 62px);display:grid;grid-template-columns:minmax(440px,1fr) 360px;gap:10px;padding:10px;overflow:hidden}.match-main{display:grid;grid-template-rows:70px 1fr 118px;gap:10px;min-height:0}.score{border:1px solid var(--line);border-radius:22px;background:rgba(16,34,58,.95);padding:10px 14px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}.score .mid{font-size:34px;font-weight:950;text-align:center;min-width:120px}.away{text-align:right}.team small{color:var(--muted)}
+.pitch-wrap{position:relative;overflow:hidden;border-radius:24px;border:1px solid rgba(255,255,255,.18);background:var(--pitch1);min-height:0}.pitch{position:absolute;inset:0;background:repeating-linear-gradient(0deg,var(--pitch1) 0 9.09%,var(--pitch2) 9.09% 18.18%)}.pitch:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent calc(50% - 1px),rgba(255,255,255,.54) calc(50% - 1px),rgba(255,255,255,.54) calc(50% + 1px),transparent calc(50% + 1px))}
+.line{position:absolute;border:2px solid rgba(255,255,255,.5)}.circle{width:22%;aspect-ratio:1/1;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%)}.boxL,.boxR{top:24%;width:14%;height:52%}.boxL{left:0;border-left:0}.boxR{right:0;border-right:0}.smallL,.smallR{top:36%;width:7%;height:28%}.smallL{left:0;border-left:0}.smallR{right:0;border-right:0}
+.dot{position:absolute;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:950;color:#fff;transform:translate(-50%,-50%);border:2px solid rgba(255,255,255,.82);box-shadow:0 5px 14px rgba(0,0,0,.45);transition:left .42s linear,top .42s linear;z-index:3}.dot.home{background:#1d4ed8}.dot.away{background:#dc2626}.dot.off{opacity:.25}.ball{position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);border:3px solid #111;box-shadow:0 4px 10px rgba(0,0,0,.5);transition:left .32s linear,top .32s linear;z-index:5}
+.flash{position:absolute;inset:0;display:none;place-items:center;background:rgba(0,0,0,.48);z-index:9;text-align:center}.flash.active{display:grid;animation:flash .85s ease both}.flash b{font-size:56px;color:var(--yellow)}.flash small{display:block;margin-top:8px}@keyframes flash{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+.match-bottom{border:1px solid var(--line);border-radius:22px;background:rgba(16,34,58,.95);padding:10px;display:grid;grid-template-columns:1fr auto;gap:10px}.main-event{font-size:14px;font-weight:950;color:var(--yellow)}.sub-event{color:var(--muted);font-size:12px}.controls{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.controls button{font-size:11px;padding:8px 9px}.timeline{display:grid;gap:7px;max-height:330px;overflow:auto}.bar{height:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;display:flex}.barA{background:var(--blue)}.barB{background:var(--red)}
+
+@media(max-width:920px){
+ html,body{overflow:auto}.screen{height:auto;min-height:100vh;overflow:auto}.menu{grid-template-columns:1fr;padding:12px}.hero{padding:20px}.hero h1{font-size:36px}.app{height:auto;min-height:100vh;grid-template-rows:auto 1fr 58px}.topbar{position:sticky;top:0;z-index:50;height:auto;min-height:58px}.top-actions{display:none}.layout{display:block;height:auto;padding:10px 10px 70px;overflow:visible}.panel{margin-bottom:10px}.panel-body{height:auto;max-height:none}.grid2,.grid3{grid-template-columns:1fr}.setup-wrap{height:auto;min-height:calc(100vh - 58px);padding:10px 10px 70px}.setup-card{padding:15px}.mobile-section{display:none}.mobile-section.active{display:block}.mobile-nav{position:fixed;left:0;right:0;bottom:0;height:58px;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;background:rgba(7,17,31,.97);border-top:1px solid var(--line);z-index:80;padding:6px}.mobile-nav button{font-size:10px;padding:5px;border-radius:12px}.match-layout{display:block;height:auto;padding:10px 10px 70px;overflow:visible}.match-main{height:auto;grid-template-rows:auto 60vh auto}.pitch-wrap{min-height:60vh}.match-bottom{grid-template-columns:1fr}.controls{justify-content:flex-start}.score .mid{font-size:26px;min-width:84px}
+}
+</style>
+</head>
+<body>
+
+<section id="menu" class="screen active">
+  <div class="menu">
+    <div class="hero">
+      <div>
+        <h1>Manager de Botão</h1>
+        <p>Carreira de treinador de 2026 até 2060. Escale, treine, negocie, acompanhe calendário, ligas, copas e simule partidas em campo 2D visto de cima.</p>
+        <div class="tags">
+          <span class="tag">Carreira clássica</span><span class="tag">Carreira personalizada</span><span class="tag">2026–2060</span><span class="tag">Mobile + Desktop</span><span class="tag">Campo 2D</span>
+        </div>
+      </div>
+      <p>V4 completa de sistemas em um único index.html para GitHub Pages.</p>
+    </div>
+    <div class="menu-card">
+      <button class="menu-btn" onclick="screen('careerMenu')"><span class="ico">⚽</span><span><b>Modo Carreira</b><small>Clássica ou personalizada</small></span><span>▶</span></button>
+      <button class="menu-btn locked" disabled><span class="ico">🏟️</span><span><b>Modo Clube</b><small>Em breve</small></span><span>🔒</span></button>
+      <button class="menu-btn locked" disabled><span class="ico">🌎</span><span><b>Modo Seleção</b><small>Em breve</small></span><span>🔒</span></button>
+      <button class="menu-btn locked" disabled><span class="ico">🏆</span><span><b>Torneios</b><small>Em breve</small></span><span>🔒</span></button>
+      <button class="menu-btn locked" disabled><span class="ico">⚙️</span><span><b>Configurações</b><small>Em breve</small></span><span>🔒</span></button>
+      <button class="menu-btn" onclick="loadSave()"><span class="ico">💾</span><span><b>Carregar save</b><small>Continua localStorage</small></span><span>▶</span></button>
+    </div>
+  </div>
+</section>
+
+<section id="careerMenu" class="screen">
+  <div class="menu">
+    <div class="hero">
+      <div><h1>Modo Carreira</h1><p>Na clássica você escolhe só a liga e recebe propostas compatíveis. Na personalizada você escolhe liga, clube, reputação, perfil e verba.</p></div>
+      <button class="ghost" onclick="screen('menu')">← Voltar</button>
+    </div>
+    <div class="menu-card">
+      <button class="menu-btn" onclick="startSetup('classic')"><span class="ico">📋</span><span><b>Carreira Clássica</b><small>Começo realista, clubes pequenos</small></span><span>▶</span></button>
+      <button class="menu-btn" onclick="startSetup('custom')"><span class="ico">🎛️</span><span><b>Carreira Personalizada</b><small>Escolha tudo e crie seu cenário</small></span><span>▶</span></button>
+    </div>
+  </div>
+</section>
+
+<section id="setup" class="screen">
+  <div class="app">
+    <div class="topbar"><div class="top-left"><div class="logo">MB</div><div class="top-title"><b id="setupTitle">Criar carreira</b><small>Configure o treinador</small></div></div><div class="top-actions"><button onclick="screen('careerMenu')">Voltar</button></div></div>
+    <div class="setup-wrap">
+      <div class="setup-card">
+        <h1 id="setupH1">Criar treinador</h1>
+        <p id="setupP"></p>
+        <div class="grid3">
+          <label>Nome do treinador<input id="managerName" value="Renan Miranda"></label>
+          <label>Nacionalidade<select id="managerNation"><option>Brasil</option><option>Argentina</option><option>Portugal</option><option>Espanha</option><option>Inglaterra</option><option>Japão</option><option>Arábia Saudita</option></select></label>
+          <label>Estilo preferido<select id="managerStyle"><option value="equilibrado">Equilibrado</option><option value="ofensivo">Ofensivo</option><option value="defensivo">Defensivo</option><option value="pressao">Pressão alta</option><option value="contra">Contra-ataque</option><option value="posse">Posse de bola</option></select></label>
+        </div>
+        <div class="grid2" id="modeText" style="margin-top:12px"></div>
+        <div class="grid3" style="margin-top:12px">
+          <label>Liga / País inicial<select id="leagueSelect" onchange="updateClubSelect()"></select></label>
+          <label id="clubLabel" class="hide">Clube inicial<select id="clubSelect"></select></label>
+          <label id="profileLabel" class="hide">Perfil<select id="profileSelect" onchange="presetProfile()"><option value="zero">Começar do zero</option><option value="ex_comum">Ex-jogador comum</option><option value="ex_famoso">Ex-jogador famoso</option><option value="rico">Treinador rico</option><option value="bilionario">Treinador bilionário</option><option value="lenda">Lenda do futebol</option></select></label>
+        </div>
+        <div id="customBox" class="grid3 hide" style="margin-top:12px">
+          <label>Reputação inicial<input id="customRep" type="number" min="0" max="100" value="30"></label>
+          <label>Dinheiro pessoal<input id="customMoney" type="number" min="0" value="0"></label>
+          <label>Verba do clube<input id="customBudget" type="number" min="0" value="1500000"></label>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px"><button class="primary" onclick="generateOptions()">Continuar</button><button onclick="screen('careerMenu')">Cancelar</button></div>
+        <div id="proposalArea" class="stack" style="margin-top:16px"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="dashboard" class="screen">
+  <div class="app">
+    <div class="topbar">
+      <div class="top-left"><div class="logo">MB</div><div class="top-title"><b id="clubName">Clube</b><small id="seasonInfo">Temporada</small></div></div>
+      <div class="top-actions"><button onclick="saveGame()">Salvar</button><button onclick="screen('menu')">Menu</button><button class="primary" onclick="openMatch()">Jogar partida</button><button class="warn" onclick="quickResult()">Resultado direto</button></div>
+    </div>
+    <div class="layout">
+      <aside class="panel mobile-section active" data-tab="home">
+        <div class="panel-head"><h2>Carreira</h2><small id="managerMini">-</small></div>
+        <div class="panel-body stack">
+          <div class="metric"><small>Data</small><b id="dateBox">-</b></div>
+          <div class="metric"><small>Reputação</small><b id="repBox">-</b></div>
+          <div class="metric"><small>Diretoria</small><b id="boardBox">-</b></div>
+          <div class="metric"><small>Moral</small><b id="moraleBox">-</b></div>
+          <button class="primary" onclick="openMatch()">▶ Jogar partida</button>
+          <button class="warn" onclick="quickResult()">⚡ Resultado direto</button>
+          <button onclick="simulateWeek()">Simular semana</button>
+          <button onclick="simulateMonth()">Simular mês</button>
+          <button onclick="simulateUntilImportant()">Até jogo importante</button>
+          <button onclick="endSeason()">Encerrar temporada</button>
+          <div class="news" id="nextMatchBox">-</div>
+        </div>
+      </aside>
+      <main class="panel mobile-section" data-tab="dash">
+        <div class="panel-head"><h2>Dashboard</h2><span class="pill" id="leagueBox">Liga</span></div>
+        <div class="panel-body stack">
+          <div class="grid3">
+            <div class="metric"><small>Posição</small><b id="posBox">-</b></div>
+            <div class="metric"><small>Verba</small><b id="budgetBox">-</b></div>
+            <div class="metric"><small>Folha</small><b id="wageBox">-</b></div>
+          </div>
+          <div class="grid2">
+            <div class="panel" style="box-shadow:none"><div class="panel-head"><h2>Notícias</h2></div><div class="panel-body stack" id="newsList"></div></div>
+            <div class="panel" style="box-shadow:none"><div class="panel-head"><h2>Calendário</h2></div><div class="panel-body stack" id="fixtureList"></div></div>
+          </div>
+        </div>
+      </main>
+      <aside class="panel mobile-section" data-tab="squad">
+        <div class="panel-head"><h2>Elenco</h2><small id="squadCount">-</small></div>
+        <div class="panel-body"><div class="tabs"><button onclick="setSquadView('all')">Todos</button><button onclick="setSquadView('lineup')">Titulares</button><button onclick="setSquadView('stats')">Stats</button></div><div class="stack" id="squadList"></div></div>
+      </aside>
+      <aside class="panel mobile-section" data-tab="table">
+        <div class="panel-head"><h2>Competições</h2><button onclick="screen('tables')">Abrir</button></div>
+        <div class="panel-body" id="miniTable"></div>
+      </aside>
+      <aside class="panel mobile-section" data-tab="market">
+        <div class="panel-head"><h2>Mercado</h2><small>Janela</small></div>
+        <div class="panel-body stack"><div id="marketStatus" class="news"></div><button onclick="openMarket()">Ver jogadores</button><div id="marketList" class="stack"></div></div>
+      </aside>
+    </div>
+    <div class="mobile-nav"><button onclick="tab('home')">Início</button><button onclick="tab('dash')">Painel</button><button onclick="tab('squad')">Elenco</button><button onclick="tab('table')">Tabela</button><button onclick="tab('market')">Mercado</button></div>
+  </div>
+</section>
+
+<section id="tables" class="screen">
+  <div class="app"><div class="topbar"><div class="top-left"><div class="logo">MB</div><div class="top-title"><b>Competições</b><small>Ligas, grupos e mata-mata</small></div></div><div class="top-actions"><button onclick="screen('dashboard')">Voltar</button></div></div>
+  <div class="setup-wrap"><div class="setup-card"><h1>Competições</h1><div class="tabs"><button onclick="renderTables('league')">Liga</button><button onclick="renderTables('cup')">Copa</button><button onclick="renderTables('continental')">Continental</button><button onclick="renderTables('world')">Mundo</button></div><div id="tablesContent"></div><div style="margin-top:12px"><button class="primary" onclick="screen('dashboard')">Voltar</button></div></div></div></div>
+</section>
+
+<section id="match" class="screen">
+  <div class="app">
+    <div class="topbar"><div class="top-left"><div class="logo">2D</div><div class="top-title"><b id="matchComp">Partida</b><small id="matchRound">-</small></div></div><div class="top-actions"><button onclick="pauseMatch()">Pausar</button><button onclick="speed(1)">1x</button><button onclick="speed(2)">2x</button><button onclick="speed(5)">5x</button><button class="warn" onclick="directMatch()">Resultado direto</button></div></div>
+    <div class="match-layout">
+      <main class="match-main">
+        <div class="score"><div class="team"><b id="homeName">Casa</b><small id="homeInfo">-</small></div><div class="mid" id="scoreBox">0 x 0</div><div class="team away"><b id="awayName">Fora</b><small id="awayInfo">-</small></div></div>
+        <div class="pitch-wrap"><div class="pitch"></div><div class="line circle"></div><div class="line boxL"></div><div class="line boxR"></div><div class="line smallL"></div><div class="line smallR"></div><div id="dots"></div><div id="ball" class="ball" style="left:50%;top:50%"></div><div id="flash" class="flash"><div><b>GOOOL!</b><small id="flashText"></small></div></div></div>
+        <div class="match-bottom"><div><div class="main-event" id="mainEvent">Clique em Jogar para iniciar.</div><div class="sub-event" id="subEvent">Campo 2D com gol, escanteio, lateral, falta, cartões, pênalti, VAR e impedimento.</div><div class="tags" id="matchTags"></div></div><div class="controls"><button class="primary" onclick="startMatch()">Jogar</button><button onclick="pauseMatch()">Pausar</button><button onclick="speed(1)">1x</button><button onclick="speed(2)">2x</button><button onclick="speed(5)">5x</button><button class="warn" onclick="directMatch()">Resultado</button></div></div>
+      </main>
+      <aside class="panel"><div class="panel-head"><h2>Estatísticas</h2><span class="pill" id="clock">0'</span></div><div class="panel-body"><div class="stack" id="matchStats"></div><h3 style="font-size:14px">Eventos</h3><div class="timeline" id="timeline"></div></div><div class="panel-head"><button class="primary" id="continueBtn" onclick="finishReturn()" disabled>Continuar</button></div></aside>
+    </div>
+  </div>
+</section>
+
+<script>
+const END_YEAR=2060;
+const POS=["GOL","LD","ZAG","ZAG","LE","VOL","MC","MEI","PE","ATA","PD"];
+const WORLD_COMPS=[
+ {id:"champions",name:"Champions League",continent:"Europa",format:"fase de liga + mata-mata",prestige:100},
+ {id:"europa",name:"Europa League",continent:"Europa",format:"fase de liga + mata-mata",prestige:88},
+ {id:"conference",name:"Conference League",continent:"Europa",format:"fase de liga + mata-mata",prestige:76},
+ {id:"libertadores",name:"Libertadores",continent:"América do Sul",format:"grupos + mata-mata",prestige:95},
+ {id:"sulamericana",name:"Sul-Americana",continent:"América do Sul",format:"grupos + mata-mata",prestige:82},
+ {id:"concacaf",name:"CONCACAF Champions Cup",continent:"América do Norte",format:"mata-mata",prestige:80},
+ {id:"afc_elite",name:"AFC Champions League Elite",continent:"Ásia",format:"fase de liga + mata-mata",prestige:84},
+ {id:"afc_two",name:"AFC Champions League Two",continent:"Ásia",format:"grupos + mata-mata",prestige:72}
+];
+const LEAGUES=[
+ {id:"br_a",name:"Brasil - Série A",country:"Brasil",continent:"América do Sul",calendar:"annual",clubs:[
+ ["flamengo","Flamengo",88,60000000,95,82],["palmeiras","Palmeiras",88,58000000,90,82],["sao_paulo","São Paulo",82,35000000,86,78],["corinthians","Corinthians",82,34000000,90,77],["atletico_mg","Atlético-MG",81,33000000,82,77],["gremio","Grêmio",78,26000000,78,75],["bahia","Bahia",76,30000000,70,74],["fortaleza","Fortaleza",75,22000000,65,74],["ribeirao_fc","Ribeirão FC",42,2000000,44,68],["litoral_sc","Litoral SC",38,1600000,40,66]]},
+ {id:"la_liga",name:"Espanha - La Liga",country:"Espanha",continent:"Europa",calendar:"europe",clubs:[
+ ["barcelona","Barcelona",96,150000000,95,88],["real_madrid","Real Madrid",98,220000000,98,90],["atletico","Atlético Madrid",90,90000000,86,84],["sevilla","Sevilla",78,28000000,70,78],["valencia","Valencia",74,20000000,68,76],["villarreal","Villarreal",77,26000000,65,77],["real_sociedad","Real Sociedad",80,35000000,70,79],["betis","Betis",77,24000000,68,77],["granada","Granada",62,8000000,48,70],["getafe","Getafe",66,11000000,52,72]]},
+ {id:"premier",name:"Inglaterra - Premier League",country:"Inglaterra",continent:"Europa",calendar:"europe",clubs:[
+ ["man_city","Manchester City",97,210000000,96,89],["arsenal","Arsenal",93,145000000,90,86],["liverpool","Liverpool",94,150000000,91,87],["chelsea","Chelsea",88,130000000,86,84],["tottenham","Tottenham",87,110000000,82,83],["man_utd","Manchester United",90,125000000,94,82],["brighton","Brighton",76,40000000,62,78],["newcastle","Newcastle",84,90000000,78,81],["burnley","Burnley",61,14000000,44,70],["forest","Forest",68,24000000,55,73]]},
+ {id:"serie_a_it",name:"Itália - Serie A",country:"Itália",continent:"Europa",calendar:"europe",clubs:[
+ ["inter","Inter",91,100000000,88,85],["milan","Milan",88,85000000,86,83],["juventus","Juventus",89,90000000,90,84],["napoli","Napoli",86,75000000,84,82],["roma","Roma",82,50000000,78,80],["lazio","Lazio",80,42000000,72,78],["atalanta","Atalanta",83,52000000,74,81],["torino","Torino",72,18000000,58,74]]},
+ {id:"bundesliga",name:"Alemanha - Bundesliga",country:"Alemanha",continent:"Europa",calendar:"europe",clubs:[
+ ["bayern","Bayern",95,160000000,94,88],["dortmund","Dortmund",88,85000000,84,83],["leverkusen","Leverkusen",89,90000000,82,85],["leipzig","RB Leipzig",87,85000000,80,83],["frankfurt","Frankfurt",78,38000000,68,78],["wolfsburg","Wolfsburg",75,28000000,62,76],["stuttgart","Stuttgart",77,30000000,65,77],["mainz","Mainz",68,15000000,50,72]]},
+ {id:"ligue1",name:"França - Ligue 1",country:"França",continent:"Europa",calendar:"europe",clubs:[
+ ["psg","PSG",94,180000000,92,88],["marseille","Marseille",82,60000000,84,80],["lyon","Lyon",80,45000000,78,78],["monaco","Monaco",83,65000000,70,81],["lille","Lille",79,38000000,66,78],["rennes","Rennes",78,36000000,64,77],["nice","Nice",78,34000000,62,77],["nantes","Nantes",68,14000000,54,72]]},
+ {id:"portugal",name:"Portugal - Liga Portugal",country:"Portugal",continent:"Europa",calendar:"europe",clubs:[
+ ["benfica","Benfica",86,70000000,88,82],["porto","Porto",85,65000000,86,81],["sporting","Sporting",86,68000000,84,82],["braga","Braga",78,32000000,68,77],["guimaraes","Vitória SC",72,15000000,58,73],["boavista","Boavista",65,8000000,50,69],["famalicao","Famalicão",68,10000000,52,71],["estoril","Estoril",64,6000000,45,68]]},
+ {id:"argentina",name:"Argentina - Primera",country:"Argentina",continent:"América do Sul",calendar:"annual",clubs:[
+ ["river","River Plate",84,45000000,88,80],["boca","Boca Juniors",84,43000000,90,80],["racing","Racing",78,22000000,74,76],["independiente","Independiente",76,18000000,76,75],["san_lorenzo","San Lorenzo",75,16000000,72,74],["estudiantes","Estudiantes",76,17000000,68,75],["velez","Vélez",74,15000000,65,74],["talleres","Talleres",75,16000000,64,74]]},
+ {id:"saudi",name:"Arábia Saudita - Pro League",country:"Arábia Saudita",continent:"Ásia",calendar:"annual",clubs:[
+ ["al_hilal","Al Hilal",88,170000000,88,84],["al_nassr","Al Nassr",87,160000000,90,84],["al_ittihad","Al Ittihad",84,130000000,82,81],["al_ahli","Al Ahli",84,120000000,80,81],["al_shabab","Al Shabab",75,35000000,62,76],["al_ettifaq","Al Ettifaq",74,30000000,60,75],["al_fateh","Al Fateh",68,12000000,48,70],["al_raed","Al Raed",65,8000000,44,68]]},
+ {id:"japan",name:"Japão - J1 League",country:"Japão",continent:"Ásia",calendar:"annual",clubs:[
+ ["kobe","Vissel Kobe",76,13000000,66,76],["yokohama","Yokohama F. Marinos",75,12000000,64,75],["urawa","Urawa Reds",75,11000000,68,74],["kashima","Kashima Antlers",74,10000000,62,74],["tokyo","FC Tokyo",72,8500000,58,72],["osaka","Gamba Osaka",70,7600000,55,71],["sapporo","Consadole Sapporo",66,4200000,44,67],["sendai","Sendai Green",56,2600000,35,65]]},
+ {id:"mls",name:"EUA - MLS",country:"Estados Unidos",continent:"América do Norte",calendar:"annual",clubs:[
+ ["inter_miami","Inter Miami",80,55000000,82,78],["la_galaxy","LA Galaxy",75,30000000,70,74],["lafc","LAFC",77,34000000,72,75],["nycfc","New York City",73,24000000,64,72],["atlanta","Atlanta United",72,22000000,62,72],["seattle","Seattle Sounders",74,26000000,64,73],["columbus","Columbus Crew",73,23000000,60,72],["austin","Austin FC",68,15000000,50,69]]}
+];
+const REAL_NAMES={
+ br:{first:["João","Lucas","Gabriel","Matheus","Pedro","Rafael","Bruno","Felipe","Thiago","Vinicius","Caio","Renato","André","Diego","Murilo","Davi"],last:["Silva","Santos","Oliveira","Souza","Pereira","Costa","Rodrigues","Almeida","Gomes","Ferreira","Lima","Barbosa"]},
+ eu:{first:["Alex","Marco","Daniel","Nico","Adrian","Leo","Martin","David","Julian","Victor","Samuel","Eric","Hugo","Oscar","Ivan","Bruno"],last:["Garcia","Martinez","Smith","Brown","Rossi","Bianchi","Muller","Schmidt","Silva","Costa","Lopez","Fernandez","Klein","Moretti"]},
+ asia:{first:["Hiro","Takumi","Ren","Yuto","Min","Joon","Ali","Fahad","Omar","Sultan","Riku","Daichi"],last:["Tanaka","Suzuki","Kim","Park","Lee","Al-Harbi","Al-Qahtani","Yamamoto","Kobayashi","Nakamura"]}
+};
+const state={careerType:"classic",manager:null,league:null,userClub:null,table:[],schedule:[],round:0,date:{year:2026,month:1,day:5},season:"2026",news:[],proposal:null,squadView:"all",match:null,timer:null,speed:2,market:[]};
+function $(id){return document.getElementById(id)}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
+function money(v){if(v>=1e9)return"R$ "+(v/1e9).toFixed(1)+"B";if(v>=1e6)return"R$ "+(v/1e6).toFixed(1)+"M";if(v>=1e3)return"R$ "+(v/1e3).toFixed(0)+"k";return"R$ "+v}
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function screen(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active");if(id==="tables")renderTables("league")}
+function tab(t){document.querySelectorAll(".mobile-section").forEach(s=>s.classList.remove("active"));let e=document.querySelector(`[data-tab="${t}"]`);if(e)e.classList.add("active")}
+
+/* Setup */
+function startSetup(type){state.careerType=type;screen("setup");setupScreen()}
+function setupScreen(){
+ $("setupTitle").textContent=state.careerType==="classic"?"Carreira Clássica":"Carreira Personalizada";
+ $("setupH1").textContent=state.careerType==="classic"?"Criar carreira clássica":"Criar carreira personalizada";
+ $("setupP").textContent=state.careerType==="classic"?"Na clássica você escolhe só a liga. O jogo oferece propostas compatíveis com sua reputação. Começando do zero, você não pega clube gigante.":"Na personalizada você escolhe liga, clube, perfil, reputação e verba.";
+ $("modeText").innerHTML=state.careerType==="classic"?`<div class="choice active"><b>Realista</b><p>Escolhe liga e recebe propostas.</p></div><div class="choice"><b>Começo do zero</b><p>Clubes pequenos, pouco dinheiro e objetivo modesto.</p></div>`:`<div class="choice active"><b>Controle total</b><p>Escolha clube, reputação, dinheiro e verba.</p></div><div class="choice"><b>Cenário livre</b><p>Rico, ex-jogador, lenda ou zero absoluto.</p></div>`;
+ $("leagueSelect").innerHTML=LEAGUES.map(l=>`<option value="${l.id}">${l.name}</option>`).join("");
+ let custom=state.careerType==="custom";$("clubLabel").classList.toggle("hide",!custom);$("profileLabel").classList.toggle("hide",!custom);$("customBox").classList.toggle("hide",!custom);
+ $("proposalArea").innerHTML="";updateClubSelect()
+}
+function updateClubSelect(){let l=LEAGUES.find(x=>x.id===$("leagueSelect").value);$("clubSelect").innerHTML=l.clubs.map(c=>`<option value="${c[0]}">${c[1]}</option>`).join("")}
+function presetProfile(){let p=$("profileSelect").value;let map={zero:[20,0,1e6],ex_comum:[48,5e5,2500000],ex_famoso:[72,5e6,12000000],rico:[55,5e7,25000000],bilionario:[65,1e9,1e8],lenda:[90,1e7,80000000]};let v=map[p]||map.zero;$("customRep").value=v[0];$("customMoney").value=v[1];$("customBudget").value=v[2]}
+function generateOptions(){
+ let name=$("managerName").value.trim()||"Treinador",nation=$("managerNation").value,style=$("managerStyle").value,raw=LEAGUES.find(l=>l.id===$("leagueSelect").value);
+ if(state.careerType==="classic"){
+  let manager={name,nation,style,rep:30,money:0,profile:"zero",history:[],titles:0};
+  let props=raw.clubs.map(c=>clubFrom(c,raw)).filter(c=>c.rep<=manager.rep+18).sort((a,b)=>a.rep-b.rep).slice(0,3);
+  if(props.length<3)props=raw.clubs.map(c=>clubFrom(c,raw)).sort((a,b)=>a.rep-b.rep).slice(0,3);
+  renderProposals(manager,raw,props);
+ }else{
+  let manager={name,nation,style,rep:Number($("customRep").value||30),money:Number($("customMoney").value||0),profile:$("profileSelect").value,history:[],titles:0};
+  let club=clubFrom(raw.clubs.find(c=>c[0]===$("clubSelect").value),raw);club.budget=Number($("customBudget").value||club.budget);
+  renderProposals(manager,raw,[club]);
+ }
+}
+function clubFrom(c,league){return{id:c[0],name:c[1],rep:c[2],budget:c[3],pressure:c[4],base:c[5],league:league.id,country:league.country,continent:league.continent,wageMax:Math.round(c[3]*.18),objective:c[2]>85?"título":c[2]>75?"continental":c[2]>65?"meio de tabela":"não cair",board:70,squad:[]}}
+function renderProposals(manager,raw,clubs){
+ state.pending={manager,raw,clubs};state.proposal=0;
+ $("proposalArea").innerHTML=`<h2>${clubs.length>1?"Propostas":"Clube escolhido"}</h2>`+clubs.map((c,i)=>`<div class="proposal" id="prop${i}" onclick="selectProposal(${i})"><b>${c.name}</b><div class="tags"><span class="pill">Rep ${c.rep}</span><span class="pill">${money(c.budget)}</span><span class="pill">Pressão ${c.pressure}</span><span class="pill">${c.objective}</span></div>${manager.rep<35&&c.rep>75?'<div class="news" style="color:var(--yellow)">Cenário irrealista: treinador desconhecido em clube gigante.</div>':""}</div>`).join("")+`<button class="primary" onclick="confirmCareer()">Começar carreira</button>`;
+ selectProposal(0)
+}
+function selectProposal(i){state.proposal=i;document.querySelectorAll(".proposal").forEach(e=>e.classList.remove("selected"));let el=$("prop"+i);if(el)el.classList.add("selected")}
+function confirmCareer(){
+ let raw=state.pending.raw;state.manager=state.pending.manager;state.league=prepareLeague(raw);let id=state.pending.clubs[state.proposal||0].id;state.userClub=state.league.clubs.find(c=>c.id===id);
+ state.date={year:2026,month:state.league.calendar==="europe"?8:1,day:5};state.season=state.league.calendar==="europe"?"2026/27":"2026";state.news=[`Você assinou com ${state.userClub.name}.`,`Objetivo: ${state.userClub.objective}.`,state.careerType==="classic"?"Carreira clássica iniciada.":"Carreira personalizada iniciada."];
+ initSeason();screen("dashboard");renderDashboard()
+}
+
+/* Generate world */
+function prepareLeague(raw){let l=clone(raw);l.clubs=l.clubs.map(c=>{let club=clubFrom(c,l);club.squad=generateSquad(club);return club});return l}
+function countryKey(country){if(country==="Brasil")return"br";if(["Japão","Arábia Saudita"].includes(country))return"asia";return"eu"}
+function pname(country){let k=countryKey(country),n=REAL_NAMES[k];return pick(n.first)+" "+pick(n.last)}
+function generateAttrs(pos,ov){let a={},b=n=>clamp(Math.round(ov+rand(-n,n)),25,99),lo=()=>clamp(ov-rand(12,30),20,85);["controle","drible","passeCurto","passeLongo","visao","cruzamento","finalizacao","chute","cabeceio","bolaParada","desarme","interceptacao","marcacao","posDef","velocidade","aceleracao","forca","resistencia","agilidade","decisao","compostura","equipe","lideranca","pressao","regularidade"].forEach(k=>a[k]=b(9));if(pos==="GOL"){return{reflexos:b(6),posicionamento:b(7),maos:b(7),saida:b(10),reposicao:b(12),umContraUm:b(8),velocidade:lo(),compostura:b(10)}}if(["PE","PD","ME","MD"].includes(pos)){a.velocidade=b(5);a.aceleracao=b(5);a.drible=b(6);a.cruzamento=b(8);a.desarme=lo();a.marcacao=lo()}if(["ATA","SA"].includes(pos)){a.finalizacao=b(5);a.chute=b(6);a.compostura=b(6);a.desarme=lo();a.marcacao=lo()}if(["MC","MEI"].includes(pos)){a.passeCurto=b(5);a.visao=b(5);a.controle=b(6)}if(pos==="VOL"){a.desarme=b(6);a.interceptacao=b(6);a.posDef=b(6)}if(["ZAG","LD","LE"].includes(pos)){a.desarme=b(6);a.marcacao=b(6);a.posDef=b(6);a.interceptacao=b(7);a.finalizacao=lo()}return a}
+function generateSquad(club){let positions=["GOL","GOL","LD","LE","ZAG","ZAG","ZAG","VOL","MC","MC","MEI","PE","PD","ATA","ATA","SA","MD","ME","ZAG","MC","ATA"];return positions.map((pos,i)=>{let age=rand(17,36),ov=clamp(club.base+rand(-6,6)+(i<11?rand(0,3):0),45,98);return{id:club.id+"_p"+i,name:pname(club.country),age,nationality:club.country,pos,overall:ov,potential:clamp(ov+(age<23?rand(4,13):age>31?rand(-3,2):rand(0,6)),ov,99),value:Math.max(50000,Math.round(ov*ov*ov*(club.rep/75)*5)),wage:Math.max(3000,Math.round(ov*ov*(club.rep/55)*16)),morale:rand(55,82),fitness:rand(78,100),form:rand(50,85),yellow:0,red:false,injured:false,goals:0,assists:0,apps:0,rating:6,attrs:generateAttrs(pos,ov)}})}
+function initSeason(){
+ state.table=state.league.clubs.map(c=>({clubId:c.id,name:c.name,j:0,v:0,e:0,d:0,gp:0,gc:0,sg:0,pts:0}));
+ state.schedule=[];let leagueRounds=roundRobin(state.league.clubs.map(c=>c.id));leagueRounds.forEach((round,i)=>round.forEach(m=>state.schedule.push({...m,type:"league",round:i,played:false})));
+ state.cup={alive:true,round:"R16",history:[]};state.continental=createContinentalState();state.market=generateMarket();state.round=0;sortSchedule()
+}
+function roundRobin(ids){let arr=ids.slice();if(arr.length%2)arr.push("BYE");let n=arr.length,rounds=[];for(let r=0;r<n-1;r++){let ms=[];for(let i=0;i<n/2;i++){let a=arr[i],b=arr[n-1-i];if(a!=="BYE"&&b!=="BYE")ms.push({home:r%2?a:b,away:r%2?b:a})}rounds.push(ms);arr=[arr[0],arr[n-1],...arr.slice(1,n-1)]}return rounds.concat(rounds.map(rd=>rd.map(m=>({home:m.away,away:m.home}))))}
+function createContinentalState(){let qual=state.userClub&&state.userClub.rep>74;if(!qual)return{qualified:false};let comp=state.userClub.continent==="Europa"?"champions":state.userClub.continent==="América do Sul"?"libertadores":state.userClub.continent==="Ásia"?"afc_elite":"concacaf";let teams=[state.userClub.name,"Rival A","Rival B","Rival C"];return{qualified:true,comp,stage:"groups",group:teams.map(n=>({name:n,j:0,v:0,e:0,d:0,gp:0,gc:0,sg:0,pts:0})),played:0,alive:true}}
+function sortSchedule(){state.schedule.sort((a,b)=>a.round-b.round)}
+function generateMarket(){let arr=[];for(let i=0;i<18;i++){let ov=rand(58,88),pos=pick(["GOL","LD","ZAG","LE","VOL","MC","MEI","PE","PD","ATA"]);arr.push({id:"m"+i,name:pname(pick(["Brasil","Espanha","Inglaterra","Japão"])),age:rand(18,34),pos,overall:ov,value:Math.round(ov*ov*ov*4),wage:Math.round(ov*ov*12),attrs:generateAttrs(pos,ov)})}return arr.sort((a,b)=>b.overall-a.overall)}
+
+/* Dashboard */
+function renderDashboard(){
+ if(!state.userClub)return; $("clubName").textContent=state.userClub.name;$("seasonInfo").textContent=`${state.league.name} • ${state.season}`;$("managerMini").textContent=state.manager.name;$("dateBox").textContent=`${String(state.date.day).padStart(2,"0")}/${String(state.date.month).padStart(2,"0")}/${state.date.year}`;$("repBox").textContent=state.manager.rep+"/100";$("boardBox").textContent=(state.userClub.board||70)+"/100";$("moraleBox").textContent=avgMorale()+"/100";$("posBox").textContent=position()+"º";$("budgetBox").textContent=money(state.userClub.budget);$("wageBox").textContent=money(totalWage())+"/mês";$("leagueBox").textContent=state.league.name;$("squadCount").textContent=state.userClub.squad.length+" jogadores";
+ let nx=nextMatch();$("nextMatchBox").innerHTML=nx?`<b>Próximo jogo</b><br>${matchLabel(nx)}<br>${clubName(nx.home)} x ${clubName(nx.away)}`:`<b>Temporada encerrada</b><br>Avance para a próxima temporada.`;
+ $("newsList").innerHTML=state.news.slice(-8).reverse().map(n=>`<div class="news">${n}</div>`).join("")||`<div class="news">Sem notícias.</div>`;
+ $("fixtureList").innerHTML=state.schedule.filter(m=>!m.played&&(m.home===state.userClub.id||m.away===state.userClub.id)).slice(0,7).map(m=>`<div class="news"><b>${matchLabel(m)}</b><br>${clubName(m.home)} x ${clubName(m.away)}</div>`).join("")||`<div class="news">Sem jogos restantes.</div>`;
+ $("miniTable").innerHTML=tableHTML(10)+"<br>"+compSummaryHTML();renderSquad();$("marketStatus").innerHTML=isWindowOpen()?`Janela aberta. Verba: <b>${money(state.userClub.budget)}</b>`:`Janela fechada. Só livres e pré-contratos futuramente.`
+}
+function clubName(id){let c=state.league.clubs.find(x=>x.id===id);return c?c.name:id}
+function matchLabel(m){return m.type==="league"?`Liga • Rodada ${m.round+1}`:m.type==="cup"?`Copa Nacional • ${m.phase||"Mata-mata"}`:m.type==="continental"?`${compName(state.continental.comp)} • ${m.phase||"Grupo"}`:"Partida"}
+function compName(id){let c=WORLD_COMPS.find(x=>x.id===id);return c?c.name:id}
+function avgMorale(){return Math.round(state.userClub.squad.reduce((s,p)=>s+p.morale,0)/state.userClub.squad.length)}
+function totalWage(){return state.userClub.squad.reduce((s,p)=>s+p.wage,0)}
+function position(){sortTable();return state.table.findIndex(t=>t.clubId===state.userClub.id)+1}
+function nextMatch(){let all=state.schedule.filter(m=>!m.played&&(m.home===state.userClub.id||m.away===state.userClub.id));if(all.length)return all[0];return null}
+function tableHTML(limit){sortTable();let rows=(limit?state.table.slice(0,limit):state.table).map((t,i)=>`<tr class="${t.clubId===state.userClub.id?"user":""}"><td>${i+1}</td><td>${t.name}</td><td>${t.j}</td><td>${t.v}</td><td>${t.e}</td><td>${t.d}</td><td>${t.sg}</td><td><b>${t.pts}</b></td></tr>`).join("");return`<table><thead><tr><th>#</th><th>Clube</th><th>J</th><th>V</th><th>E</th><th>D</th><th>SG</th><th>Pts</th></tr></thead><tbody>${rows}</tbody></table>`}
+function sortTable(){state.table.sort((a,b)=>b.pts-a.pts||b.sg-a.sg||b.gp-a.gp||a.name.localeCompare(b.name))}
+function compSummaryHTML(){let c=state.continental;if(!c.qualified)return`<div class="news">Sem competição continental nesta temporada.</div>`;return`<div class="news"><b>${compName(c.comp)}</b><br>Fase: ${c.stage} • ${c.alive?"vivo":"eliminado"}</div>`}
+function renderSquad(){let arr=state.userClub.squad.slice();if(state.squadView==="lineup")arr=selectLineup(state.userClub);if(state.squadView==="stats")arr.sort((a,b)=>(b.goals+b.assists)-(a.goals+a.assists));else arr.sort((a,b)=>POS.indexOf(a.pos)-POS.indexOf(b.pos)||b.overall-a.overall);$("squadList").innerHTML=arr.map(p=>`<div class="row"><div class="pos">${p.pos}</div><div><b>${p.name}</b><br><span style="color:var(--muted)">${p.age} anos • Moral ${p.morale} • Físico ${p.fitness}% • G ${p.goals} A ${p.assists}</span></div><div class="ov">${p.overall}</div></div>`).join("")}
+function setSquadView(v){state.squadView=v;renderSquad()}
+function renderTables(type){let html="";if(type==="league")html=`<h2>${state.league.name}</h2>${tableHTML()}`;if(type==="cup")html=`<h2>Copa Nacional</h2><div class="news">Status: ${state.cup.alive?"vivo":"eliminado"} • Fase: ${state.cup.round}</div>${state.cup.history.map(h=>`<div class="news">${h}</div>`).join("")}`;if(type==="continental"){let c=state.continental;html=`<h2>Continental</h2>${compSummaryHTML()}`+(c.qualified?groupHTML(c.group):"")}if(type==="world")html=`<h2>Mundo</h2>${WORLD_COMPS.map(c=>`<div class="news"><b>${c.name}</b><br>${c.continent} • ${c.format}</div>`).join("")}<div class="news">Copa do Mundo é simulada a cada 4 anos no calendário global.</div>`;$("tablesContent").innerHTML=html}
+function groupHTML(g){return`<table><thead><tr><th>#</th><th>Time</th><th>J</th><th>V</th><th>E</th><th>D</th><th>SG</th><th>Pts</th></tr></thead><tbody>${g.sort((a,b)=>b.pts-a.pts||b.sg-a.sg).map((t,i)=>`<tr class="${t.name===state.userClub.name?"user":""}"><td>${i+1}</td><td>${t.name}</td><td>${t.j}</td><td>${t.v}</td><td>${t.e}</td><td>${t.d}</td><td>${t.sg}</td><td>${t.pts}</td></tr>`).join("")}</tbody></table>`}
+
+/* Market */
+function isWindowOpen(){let m=state.date.month;return state.league.calendar==="europe"?[7,8,1].includes(m):[1,2,7,8].includes(m)}
+function openMarket(){let can=isWindowOpen();$("marketList").innerHTML=state.market.slice(0,12).map(p=>`<div class="row"><div class="pos">${p.pos}</div><div><b>${p.name}</b><br><span style="color:var(--muted)">OV ${p.overall} • ${money(p.value)} • salário ${money(p.wage)}</span></div><button ${!can||state.userClub.budget<p.value?"disabled":""} onclick="buyPlayer('${p.id}')">Comprar</button></div>`).join("")}
+function buyPlayer(id){let p=state.market.find(x=>x.id===id);if(!p||state.userClub.budget<p.value)return;state.userClub.budget-=p.value;p.id=state.userClub.id+"_new_"+Date.now();p.morale=70;p.fitness=95;p.form=65;p.goals=0;p.assists=0;state.userClub.squad.push(p);state.market=state.market.filter(x=>x.id!==id);state.news.push(`${p.name} foi contratado por ${money(p.value)}.`);renderDashboard();openMarket()}
+
+/* Match */
+function openMatch(){let nx=nextMatch();if(!nx){alert("Temporada encerrada.");return}let home=nx.home===state.userClub.id?state.userClub:getClub(nx.home),away=nx.away===state.userClub.id?state.userClub:getClub(nx.away);state.match={fixture:nx,home,away,minute:0,homeScore:0,awayScore:0,running:false,finished:false,possession:Math.random()<.5?"home":"away",ball:{x:50,y:50},homeLine:assignPositions(selectLineup(home),"home"),awayLine:assignPositions(selectLineup(away),"away"),events:[],stats:{homeShots:0,awayShots:0,homeOn:0,awayOn:0,homeCorners:0,awayCorners:0,homeFouls:0,awayFouls:0,homeYellow:0,awayYellow:0,homeRed:0,awayRed:0,homeOff:0,awayOff:0,homePoss:50,awayPoss:50}};screen("match");renderMatch()}
+function getClub(id){return state.league.clubs.find(c=>c.id===id)||{id,name:id,base:70,rep:70,squad:generateSquad({id,name:id,base:70,rep:70,country:state.league.country})}}
+function selectLineup(club){let used=new Set(),line=[];POS.forEach(pos=>{let p=club.squad.filter(x=>!used.has(x.id)&&x.pos===pos&&!x.injured&&!x.red).sort((a,b)=>b.overall-a.overall)[0]||club.squad.filter(x=>!used.has(x.id)&&!x.injured&&!x.red).sort((a,b)=>b.overall-a.overall)[0];if(p){used.add(p.id);line.push({...p,fieldPos:pos,dot:short(p.name),x:50,y:50})}});return line}
+function short(n){let p=n.split(" ");return((p[0]||"X")[0]+(p[p.length-1]||"X")[0]).toUpperCase()}
+function assignPositions(line,side){let groups={GOL:[],DEF:[],MID:[],ATK:[]};line.forEach(p=>{if(p.fieldPos==="GOL")groups.GOL.push(p);else if(["LD","LE","ZAG"].includes(p.fieldPos))groups.DEF.push(p);else if(["VOL","MC","MEI","ME","MD"].includes(p.fieldPos))groups.MID.push(p);else groups.ATK.push(p)});function spread(arr,x){arr.forEach((p,i)=>{let y=arr.length===1?50:18+i*(64/(arr.length-1));p.baseX=side==="home"?x:100-x;p.baseY=y;p.x=p.baseX;p.y=p.baseY})}spread(groups.GOL,8);spread(groups.DEF,24);spread(groups.MID,50);spread(groups.ATK,78);return[...groups.GOL,...groups.DEF,...groups.MID,...groups.ATK]}
+function strength(club,line){return Math.round(line.reduce((s,p)=>s+p.overall,0)/line.length+(club.id===state.userClub.id?avgMorale()/22:3)+(club.id===state.match?.home.id?2:0))}
+function startMatch(){let m=state.match;if(!m||m.finished||m.running)return;m.running=true;clearInterval(state.timer);state.timer=setInterval(tick,650/state.speed)}
+function pauseMatch(){if(state.match)state.match.running=false;clearInterval(state.timer)}
+function speed(s){state.speed=s;if(state.match?.running){clearInterval(state.timer);state.timer=setInterval(tick,650/state.speed)}renderMatch()}
+function tick(){let m=state.match;if(!m||m.finished)return;m.minute++;move(m);processMinute(m);renderMatch();if(m.minute>=90)endMatch()}
+function move(m){let ah=m.possession==="home";m.homeLine.forEach(p=>{p.x=clamp(p.baseX+(ah?8:-5)+rand(-4,4),5,95);p.y=clamp(p.baseY+rand(-5,5),7,93)});m.awayLine.forEach(p=>{p.x=clamp(p.baseX+(ah?-5:8)+rand(-4,4),5,95);p.y=clamp(p.baseY+rand(-5,5),7,93)});let team=m.possession==="home"?m.homeLine:m.awayLine;let h=pick(team.filter(p=>!p.sentOff));if(h){m.ball.x=h.x;m.ball.y=h.y}}
+function processMinute(m){if(Math.random()>.30)return;let r=Math.random();if(r<.38)return attack(m);if(r<.55)return deadBall(m);if(r<.78)return foul(m);if(r<.88)return offside(m);if(r<.92)return varEvent(m);addEvent(`${m.minute}' jogo estudado no meio-campo`,"info")}
+function key(side,s){return side==="home"?"home"+s:"away"+s}
+function clubSide(m,side){return side==="home"?m.home:m.away}function lineSide(m,side){return side==="home"?m.homeLine:m.awayLine}
+function attack(m){let side=m.possession,other=side==="home"?"away":"home",sh=shooter(lineSide(m,side)),as=assister(lineSide(m,side),sh),atk=strength(clubSide(m,side),lineSide(m,side)),def=strength(clubSide(m,other),lineSide(m,other)),chance=clamp(.13+(atk-def)/120+(sh.attrs.finalizacao||70)/550,.06,.39);m.stats[key(side,"Shots")]++;if(Math.random()<.65)m.stats[key(side,"On")]++;let r=Math.random();if(r<chance){if(side==="home")m.homeScore++;else m.awayScore++;sh.goals=(sh.goals||0)+1;if(as)as.assists=(as.assists||0)+1;let txt=`${m.minute}' GOL - ${sh.name}${as?"; AC: "+as.name:""}`;addEvent(txt,"goal");flash(sh.name,as?.name);m.ball.x=side==="home"?98:2;m.ball.y=50}else if(r<chance+.16){m.stats[key(side,"Corners")]++;addEvent(`${m.minute}' Escanteio para ${clubSide(m,side).name}`,"corner");m.ball.x=side==="home"?96:4;m.ball.y=Math.random()<.5?4:96}else if(r<chance+.29)addEvent(`${m.minute}' Defesa difícil do goleiro de ${clubSide(m,other).name}`,"save");else addEvent(`${m.minute}' Finalização para fora - ${sh.name}`,"shot")}
+function shooter(line){let w={GOL:0,LD:1,LE:1,ZAG:1,VOL:2,MC:3,MEI:5,PE:7,PD:7,SA:8,ATA:10},pool=[];line.forEach(p=>{for(let i=0;i<(w[p.fieldPos]||2)*Math.max(1,p.overall-55);i++)pool.push(p)});return pick(pool.length?pool:line)}
+function assister(line,sh){if(Math.random()>.76)return null;let w={GOL:0,LD:4,LE:4,ZAG:1,VOL:3,MC:6,MEI:9,PE:8,PD:8,SA:6,ATA:3},pool=[];line.filter(p=>p.id!==sh.id).forEach(p=>{for(let i=0;i<(w[p.fieldPos]||2)*Math.max(1,p.overall-55);i++)pool.push(p)});return pick(pool.length?pool:line)}
+function deadBall(m){let side=m.possession;if(Math.random()<.45){m.stats[key(side,"Corners")]++;addEvent(`${m.minute}' Escanteio para ${clubSide(m,side).name}`,"corner")}else addEvent(`${m.minute}' Lateral para ${clubSide(m,side).name}`,"throw")}
+function foul(m){let def=m.possession==="home"?"away":"home",player=pick(lineSide(m,def));m.stats[key(def,"Fouls")]++;let r=Math.random();if(r<.07){m.stats[key(def,"Red")]++;player.sentOff=true;addEvent(`${m.minute}' CARTÃO VERMELHO - ${player.name}`,"red")}else if(r<.34){m.stats[key(def,"Yellow")]++;addEvent(`${m.minute}' Cartão amarelo - ${player.name}`,"yellow")}else if(r<.43)penalty(m);else addEvent(`${m.minute}' Falta cometida por ${player.name}`,"foul")}
+function penalty(m){let side=m.possession,t=shooter(lineSide(m,side));addEvent(`${m.minute}' PÊNALTI para ${clubSide(m,side).name}`,"penalty");if(Math.random()<.76){if(side==="home")m.homeScore++;else m.awayScore++;addEvent(`${m.minute}' GOL DE PÊNALTI - ${t.name}`,"goal");flash(t.name,"pênalti")}else addEvent(`${m.minute}' Pênalti perdido - ${t.name}`,"miss")}
+function offside(m){m.stats[key(m.possession,"Off")]++;addEvent(`${m.minute}' Impedimento de ${clubSide(m,m.possession).name}`,"offside")}
+function varEvent(m){if(Math.random()<.5)addEvent(`${m.minute}' VAR analisando lance. Decisão mantida.`,"var");else addEvent(`${m.minute}' VAR: gol anulado por impedimento.`,"var")}
+function addEvent(text,type){let m=state.match;m.events.unshift({text,type,minute:m.minute});$("mainEvent").textContent=text;$("subEvent").textContent=type==="goal"?"O placar foi atualizado.":"A partida segue."}
+function flash(p,a){$("flashText").textContent=a?`${p} • AC: ${a}`:p;$("flash").classList.add("active");setTimeout(()=>$("flash").classList.remove("active"),850)}
+function renderMatch(){let m=state.match;if(!m)return;$("matchComp").textContent=matchLabel(m.fixture);$("matchRound").textContent=m.fixture.type;$("homeName").textContent=m.home.name;$("awayName").textContent=m.away.name;$("homeInfo").textContent="Força "+strength(m.home,m.homeLine);$("awayInfo").textContent="Força "+strength(m.away,m.awayLine);$("scoreBox").textContent=`${m.homeScore} x ${m.awayScore}`;$("clock").textContent=`${m.minute}'`;$("continueBtn").disabled=!m.finished;$("dots").innerHTML=[...m.homeLine.map(p=>({...p,side:"home"})),...m.awayLine.map(p=>({...p,side:"away"}))].map(p=>`<div class="dot ${p.side} ${p.sentOff?"off":""}" style="left:${p.x}%;top:${p.y}%">${p.dot}</div>`).join("");$("ball").style.left=m.ball.x+"%";$("ball").style.top=m.ball.y+"%";$("matchTags").innerHTML=`<span class="pill">${state.speed}x</span><span class="pill">Posse: ${clubSide(m,m.possession).name}</span><span class="pill">${m.finished?"Encerrado":"Ao vivo"}</span>`;renderStats()}
+function renderStats(){let m=state.match;let stats=[["Finalizações",m.stats.homeShots,m.stats.awayShots],["No alvo",m.stats.homeOn,m.stats.awayOn],["Escanteios",m.stats.homeCorners,m.stats.awayCorners],["Faltas",m.stats.homeFouls,m.stats.awayFouls],["Amarelos",m.stats.homeYellow,m.stats.awayYellow],["Vermelhos",m.stats.homeRed,m.stats.awayRed],["Impedimentos",m.stats.homeOff,m.stats.awayOff]];$("matchStats").innerHTML=stats.map(([l,a,b])=>`<div><div style="display:flex;justify-content:space-between;font-size:12px"><b>${a}</b><span>${l}</span><b>${b}</b></div><div class="bar"><div class="barA" style="width:${a/(a+b||1)*100}%"></div><div class="barB" style="width:${b/(a+b||1)*100}%"></div></div></div>`).join("");$("timeline").innerHTML=m.events.slice(0,18).map(e=>`<div class="news">${e.text}</div>`).join("")||`<div class="news">Sem eventos.</div>`}
+function endMatch(){let m=state.match;if(!m||m.finished)return;pauseMatch();m.finished=true;m.fixture.played=true;m.fixture.score={home:m.homeScore,away:m.awayScore};applyResult(m.fixture,m.homeScore,m.awayScore);simulateOtherMatches(m.fixture.round);afterMatchMorale(m);addEvent(`Fim de jogo: ${m.home.name} ${m.homeScore} x ${m.awayScore} ${m.away.name}`,"end");renderMatch();saveGame()}
+function applyResult(f,hg,ag){if(f.type==="league")updateTable(f.home,f.away,hg,ag);if(f.type==="cup"){let userWin=(f.home===state.userClub.id?hg>ag:ag>hg);if(hg===ag)userWin=Math.random()<.55;if(!userWin)state.cup.alive=false;state.cup.history.push(`${matchLabel(f)}: ${clubName(f.home)} ${hg} x ${ag} ${clubName(f.away)} ${userWin?"classificado":"eliminado"}`)}if(f.type==="continental")updateGroup(hg,ag,f)}
+function updateTable(home,away,hg,ag){let h=state.table.find(t=>t.clubId===home),a=state.table.find(t=>t.clubId===away);h.j++;a.j++;h.gp+=hg;h.gc+=ag;h.sg=h.gp-h.gc;a.gp+=ag;a.gc+=hg;a.sg=a.gp-a.gc;if(hg>ag){h.v++;a.d++;h.pts+=3}else if(ag>hg){a.v++;h.d++;a.pts+=3}else{h.e++;a.e++;h.pts++;a.pts++}sortTable()}
+function updateGroup(hg,ag,f){let g=state.continental.group,home=g.find(x=>x.name===state.userClub.name),away=g.find(x=>x.name===f.rival);if(!home||!away)return;home.j++;away.j++;home.gp+=hg;home.gc+=ag;home.sg=home.gp-home.gc;away.gp+=ag;away.gc+=hg;away.sg=away.gp-away.gc;if(hg>ag){home.v++;away.d++;home.pts+=3}else if(ag>hg){away.v++;home.d++;away.pts+=3}else{home.e++;away.e++;home.pts++;away.pts++}state.continental.played++}
+function simulateOtherMatches(round){state.schedule.filter(m=>!m.played&&m.type==="league"&&m.round===round&&m.home!==state.userClub.id&&m.away!==state.userClub.id).forEach(m=>{let h=getClub(m.home),a=getClub(m.away),r=scoreByStrength(h.base+2,a.base);m.played=true;m.score=r;updateTable(m.home,m.away,r.home,r.away)})}
+function scoreByStrength(hs,as){return{home:Math.max(0,Math.round(Math.random()*2+1+(hs-as)/25)),away:Math.max(0,Math.round(Math.random()*2+1+(as-hs)/25))}}
+function afterMatchMorale(m){let uh=m.home.id===state.userClub.id,ug=uh?m.homeScore:m.awayScore,og=uh?m.awayScore:m.homeScore,d=ug-og,delta=d>0?4:d===0?0:-5;state.userClub.squad.forEach(p=>{p.morale=clamp(p.morale+delta+rand(-1,1),0,100);p.fitness=clamp(p.fitness-rand(4,12),30,100);p.apps++});state.userClub.board=clamp((state.userClub.board||70)+(d>0?2:d<0?-3:0),0,100);state.manager.rep=clamp(state.manager.rep+(d>0?1:0),0,100);state.news.push(d>0?"Vitória aumenta a moral.":d<0?"Derrota gera pressão.":"Empate mantém estabilidade.");advanceDate(4)}
+function directMatch(){let m=state.match;if(!m)return;while(m.minute<90){m.minute++;move(m);processMinute(m)}endMatch()}
+function quickResult(){openMatch();directMatch()}
+function finishReturn(){screen("dashboard");renderDashboard()}
+function advanceDate(days){state.date.day+=days;while(state.date.day>30){state.date.day-=30;state.date.month++}while(state.date.month>12){state.date.month-=12;state.date.year++}}
+function simulateWeek(){advanceDate(7);state.userClub.squad.forEach(p=>{p.fitness=clamp(p.fitness+rand(2,7),0,100);p.form=clamp(p.form+rand(-2,3),0,100)});state.news.push("Semana simulada: treinos, recuperação e eventos processados.");renderDashboard()}
+function simulateMonth(){for(let i=0;i<4;i++)simulateWeek();state.news.push("Relatório mensal gerado.");renderDashboard()}
+function simulateUntilImportant(){let n=nextMatch();if(!n){alert("Sem jogos.");return}while(state.date.day<25){advanceDate(1)}state.news.push("Calendário avançado até próximo compromisso importante.");renderDashboard()}
+
+/* Season end, aging, regens, calendar to 2060 */
+function endSeason(){
+ sortTable();let pos=position(),champ=state.table[0].name;let met=(state.userClub.objective==="título"&&pos===1)||(state.userClub.objective==="continental"&&pos<=4)||(state.userClub.objective==="meio de tabela"&&pos<=7)||(state.userClub.objective==="não cair"&&pos<=state.table.length-2)||pos<=6;
+ let repGain=met?rand(3,7):rand(-5,-1);state.manager.rep=clamp(state.manager.rep+repGain,0,100);state.manager.history.push({season:state.season,club:state.userClub.name,league:state.league.name,pos,titles:pos===1?["Liga"]:[],rep:state.manager.rep});
+ state.news.push(`Fim da temporada ${state.season}. Campeão: ${champ}. Você terminou em ${pos}º.`);
+ if(pos===1){state.manager.titles++;state.news.push("Título conquistado! Sua reputação subiu.")}
+ evolvePlayers();retirePlayers();generateRegens();globalYearEvents();
+ if(state.date.year>=END_YEAR){careerReport();return}
+ nextSeason()
+}
+function evolvePlayers(){state.league.clubs.forEach(c=>c.squad.forEach(p=>{p.age++;let delta=0;if(p.age<21)delta=rand(0,3);else if(p.age<25)delta=rand(0,2);else if(p.age<30)delta=rand(-1,1);else if(p.age<34)delta=rand(-2,0);else delta=rand(-4,-1);if(p.overall<p.potential&&delta>0)p.overall=clamp(p.overall+delta,1,p.potential);else p.overall=clamp(p.overall+delta,40,99);p.value=Math.max(20000,Math.round(p.overall*p.overall*p.overall*4));p.morale=clamp(p.morale+rand(-5,5),0,100);p.fitness=rand(78,100);p.goals=0;p.assists=0;p.apps=0}))}
+function retirePlayers(){state.league.clubs.forEach(c=>{let before=c.squad.length;c.squad=c.squad.filter(p=>!(p.age>=34&&Math.random()<((p.age-33)*.12)));let retired=before-c.squad.length;if(c.id===state.userClub.id&&retired)state.news.push(`${retired} jogador(es) se aposentaram no seu clube.`)})}
+function generateRegens(){state.league.clubs.forEach(c=>{let qtd=c.rep>85?rand(3,5):c.rep>70?rand(2,4):rand(1,3);for(let i=0;i<qtd;i++){let pos=pick(["GOL","LD","ZAG","LE","VOL","MC","MEI","PE","PD","ATA"]),ov=rand(48,66),pot=clamp(ov+rand(8,28)+(c.rep>85?5:0),ov,95);c.squad.push({id:c.id+"_regen_"+Date.now()+"_"+i,name:pname(c.country),age:16,pos,overall:ov,potential:pot,value:Math.round(ov*ov*150),wage:Math.round(ov*80),morale:70,fitness:95,form:60,goals:0,assists:0,apps:0,attrs:generateAttrs(pos,ov)})}})}
+function globalYearEvents(){if((state.date.year-2026)%4===0){let winner=pick(["Brasil","França","Argentina","Espanha","Inglaterra","Alemanha","Portugal"]);state.news.push(`Copa do Mundo ${state.date.year}: ${winner} campeão.`)}}
+function nextSeason(){state.date.year++;state.date.month=state.league.calendar==="europe"?8:1;state.date.day=5;state.season=state.league.calendar==="europe"?`${state.date.year}/${String(state.date.year+1).slice(2)}`:`${state.date.year}`;initSeason();state.news.push(`Nova temporada iniciada: ${state.season}.`);renderDashboard()}
+function careerReport(){alert(`Fim da carreira em 2060. Títulos: ${state.manager.titles}. Reputação final: ${state.manager.rep}. Histórico salvo no jogo.`)}
+function saveGame(){localStorage.setItem("manager_botao_v4",JSON.stringify({state}));state.news.push("Jogo salvo.");renderDashboard()}
+function loadSave(){let raw=localStorage.getItem("manager_botao_v4");if(!raw){alert("Nenhum save encontrado.");return}let data=JSON.parse(raw);Object.assign(state,data.state);screen("dashboard");renderDashboard()}
+
+/* Init */
+document.addEventListener("DOMContentLoaded",()=>{setupScreen()});
+</script>
+</body>
+</html>
