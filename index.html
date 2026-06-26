@@ -6,65 +6,316 @@
   <title>Copa Draft 2026</title>
   <style>
     :root{
-      --bg:#07111f;--card:#0f1f35;--card2:#132844;--text:#f3f7ff;--muted:#9fb0c7;
-      --line:rgba(255,255,255,.12);--accent:#20d47b;--danger:#ff4d6d;--warn:#ffd166;
+      --bg:#06130c;
+      --panel:#0b1b14;
+      --panel2:#10251a;
+      --line:rgba(255,255,255,.12);
+      --text:#f5fff8;
+      --muted:#a8bbae;
+      --green:#2e8b57;
+      --green2:#237348;
+      --grass1:#277646;
+      --grass2:#2f8750;
+      --white:#ffffff;
+      --accent:#f2c94c;
+      --danger:#ff4d6d;
+      --blue:#4dabf7;
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#123055,#07111f 55%);color:var(--text)}
-    header{padding:22px 16px;text-align:center;border-bottom:1px solid var(--line)}
-    header h1{margin:0;font-size:28px}
-    header p{margin:8px 0 0;color:var(--muted)}
-    main{max-width:1180px;margin:auto;padding:16px;display:grid;gap:16px}
-    .card{background:linear-gradient(180deg,var(--card),rgba(15,31,53,.86));border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 18px 50px rgba(0,0,0,.25)}
-    .grid{display:grid;gap:12px}
-    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-    .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
-    @media(max-width:800px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr} header h1{font-size:23px}}
-    button,select{border:0;border-radius:12px;padding:12px 14px;background:var(--card2);color:var(--text);font-weight:700}
-    button{cursor:pointer;border:1px solid var(--line)}
+    html,body{height:100%;overflow:hidden}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(48,160,100,.35), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(0,0,0,.55), transparent 35%),
+        var(--bg);
+    }
+    button,select{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,#173625,#0e2118);
+      color:var(--text);
+      border-radius:11px;
+      padding:9px 10px;
+      font-weight:800;
+      cursor:pointer;
+      font-size:12px;
+    }
     button:hover{filter:brightness(1.12)}
-    button.primary{background:linear-gradient(135deg,#16c172,#27e38b);color:#03130b}
-    button.danger{background:linear-gradient(135deg,#ff4d6d,#ff7a59);color:#fff}
-    button.warn{background:linear-gradient(135deg,#ffd166,#ffb703);color:#1d1200}
     button:disabled{opacity:.45;cursor:not-allowed}
-    label{display:grid;gap:7px;color:var(--muted);font-size:13px}
-    h2,h3{margin:0 0 12px}
-    .pill{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.06);font-size:12px;color:var(--muted)}
+    button.primary{background:linear-gradient(180deg,#25dd83,#15a85d);color:#03140b}
+    button.warn{background:linear-gradient(180deg,#ffd166,#d99c13);color:#1e1300}
+    button.danger{background:linear-gradient(180deg,#ff5d7a,#d93654);color:#fff}
+    select{width:100%}
+    .app{
+      height:100vh;
+      display:grid;
+      grid-template-rows:56px 1fr;
+      overflow:hidden;
+    }
+    .topbar{
+      height:56px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:8px 14px;
+      border-bottom:1px solid var(--line);
+      background:rgba(4,17,10,.78);
+      backdrop-filter:blur(10px);
+      gap:10px;
+    }
+    .brand{display:flex;align-items:center;gap:10px;min-width:185px}
+    .logo{
+      width:34px;height:34px;border-radius:50%;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,#25dd83,#f2c94c);
+      color:#03140b;font-weight:900;
+    }
+    .brand h1{margin:0;font-size:16px;line-height:1}
+    .brand small{color:var(--muted);font-size:11px}
+    .top-controls{
+      display:grid;
+      grid-template-columns:120px 120px 120px 120px auto auto;
+      gap:8px;
+      align-items:end;
+      flex:1;
+      max-width:850px;
+    }
+    label{font-size:10px;color:var(--muted);display:grid;gap:3px;text-transform:uppercase;letter-spacing:.04em}
+    .game{
+      height:calc(100vh - 56px);
+      display:grid;
+      grid-template-columns:300px minmax(360px,1fr) 330px;
+      gap:10px;
+      padding:10px;
+      overflow:hidden;
+    }
+    .panel{
+      background:linear-gradient(180deg,rgba(15,37,26,.94),rgba(7,20,13,.94));
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      min-height:0;
+      box-shadow:0 18px 40px rgba(0,0,0,.28);
+    }
+    .panel-head{
+      padding:11px 12px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      align-items:center;
+      background:rgba(255,255,255,.035);
+    }
+    .panel-head h2{margin:0;font-size:14px}
+    .panel-body{padding:10px;min-height:0}
+    .status-line{font-size:12px;color:var(--muted);line-height:1.35}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      padding:5px 8px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      font-size:11px;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+
+    .left-panel{display:grid;grid-template-rows:auto 1fr auto}
+    .players-list{
+      display:grid;
+      gap:7px;
+      overflow:auto;
+      max-height:calc(100vh - 235px);
+      padding-right:4px;
+    }
+    .player-card{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:8px;
+      align-items:center;
+      padding:9px;
+      background:rgba(255,255,255,.055);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:12px;
+    }
+    .player-card strong{display:block;font-size:12px}
+    .player-card small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+    .ov{
+      width:34px;height:34px;
+      display:grid;place-items:center;
+      border-radius:50%;
+      background:#fff;
+      color:#111;
+      font-weight:900;
+      border:2px solid #1b1b1b;
+      font-size:13px;
+    }
+    .player-card button{grid-column:1/3;padding:7px;font-size:11px}
+    .draft-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:10px;border-top:1px solid var(--line)}
+
+    .center{
+      display:grid;
+      grid-template-rows:1fr 122px;
+      gap:10px;
+      min-height:0;
+    }
+    .field-wrap{
+      position:relative;
+      border-radius:18px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.18);
+      background:#237348;
+      min-height:0;
+    }
+    .field{
+      position:absolute;inset:0;
+      background:
+        repeating-linear-gradient(0deg,var(--grass1) 0 9.09%,var(--grass2) 9.09% 18.18%);
+    }
+    .field::before{
+      content:"";
+      position:absolute;inset:0;
+      background:
+        linear-gradient(90deg, transparent calc(50% - 1px), rgba(255,255,255,.55) calc(50% - 1px), rgba(255,255,255,.55) calc(50% + 1px), transparent calc(50% + 1px));
+      opacity:.6;
+    }
+    .mid-circle{
+      position:absolute;left:50%;top:50%;
+      width:25%;aspect-ratio:1/1;
+      transform:translate(-50%,-50%);
+      border:2px solid rgba(255,255,255,.48);
+      border-radius:50%;
+    }
+    .box-top,.box-bottom{
+      position:absolute;left:22%;width:56%;height:14%;
+      border:2px solid rgba(255,255,255,.48);
+    }
+    .box-top{top:0;border-top:0}
+    .box-bottom{bottom:0;border-bottom:0}
+    .small-top,.small-bottom{
+      position:absolute;left:36%;width:28%;height:7%;
+      border:2px solid rgba(255,255,255,.48);
+    }
+    .small-top{top:0;border-top:0}
+    .small-bottom{bottom:0;border-bottom:0}
+    .slot-chip{
+      position:absolute;
+      transform:translate(-50%,-50%);
+      display:grid;
+      place-items:center;
+      min-width:66px;
+      text-align:center;
+      cursor:pointer;
+    }
+    .circle{
+      width:40px;height:40px;border-radius:50%;
+      background:white;color:#111;
+      display:grid;place-items:center;
+      margin:auto;
+      border:2px solid #101010;
+      font-weight:900;
+      box-shadow:0 3px 8px rgba(0,0,0,.45);
+    }
+    .slot-chip .name{
+      margin-top:3px;
+      font-size:10px;
+      font-weight:900;
+      text-shadow:0 2px 3px rgba(0,0,0,.85);
+      max-width:92px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .slot-chip.empty .circle{
+      background:rgba(255,255,255,.18);
+      color:#fff;border-color:rgba(255,255,255,.45);
+      font-size:11px;
+    }
+    .slot-chip.empty .name{color:rgba(255,255,255,.75)}
+    .score-panel{
+      display:grid;
+      grid-template-columns:1fr auto 1fr;
+      gap:10px;
+      align-items:center;
+      background:linear-gradient(180deg,rgba(15,37,26,.94),rgba(7,20,13,.94));
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:12px;
+      overflow:hidden;
+    }
+    .team-label{font-weight:900;font-size:14px}
+    .team-label small{display:block;color:var(--muted);font-size:11px;font-weight:500;margin-top:3px}
+    .score-big{font-size:36px;font-weight:900;text-align:center}
+    .time-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+    .goal-feed{
+      margin-top:8px;
+      height:38px;
+      overflow:hidden;
+      font-size:12px;
+      color:var(--accent);
+      text-align:center;
+      font-weight:800;
+    }
+
+    .right-panel{display:grid;grid-template-rows:auto 1fr auto;min-height:0}
+    .mini-tabs{display:flex;gap:6px;flex-wrap:wrap}
+    .mini-tabs button{padding:7px 8px;font-size:11px}
+    .team-list{
+      overflow:auto;
+      max-height:calc(100vh - 235px);
+      display:grid;
+      gap:6px;
+      padding-right:4px;
+    }
+    .team-row{
+      display:grid;
+      grid-template-columns:44px 1fr 32px;
+      gap:7px;
+      align-items:center;
+      padding:7px;
+      border-radius:10px;
+      background:rgba(255,255,255,.055);
+      border:1px solid rgba(255,255,255,.08);
+      font-size:11px;
+    }
+    .team-row b{color:var(--accent)}
+    .team-row strong{font-size:11px}
+    .team-row small{display:block;color:var(--muted);font-size:9px}
+    .tables-box{height:170px;overflow:auto;border-top:1px solid var(--line);padding:9px}
+    table{width:100%;border-collapse:collapse;font-size:11px}
+    td,th{padding:5px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+    th{color:var(--muted);font-size:9px;text-transform:uppercase}
     .hidden{display:none!important}
-    .players{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
-    .player{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:8px}
-    .player strong{font-size:15px}
-    .player small{color:var(--muted)}
-    .overall{font-weight:900;color:var(--accent)}
-    .field{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}
-    .slot{min-height:84px;border:1px dashed rgba(255,255,255,.25);border-radius:14px;padding:10px;background:rgba(0,0,0,.12)}
-    .slot b{display:block;color:var(--warn);margin-bottom:6px}
-    .slot .empty{color:var(--muted)}
-    .scoreboard{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-    .score{font-size:34px;font-weight:900}
-    .events{max-height:260px;overflow:auto;display:grid;gap:8px}
-    .event{padding:9px 10px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
-    table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:12px}
-    th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
-    th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em}
-    .tabs{display:flex;gap:8px;flex-wrap:wrap}
-    .status{color:var(--muted);line-height:1.45}
+
+    @media(max-width:950px){
+      html,body{overflow:auto;height:auto}
+      .app{height:auto;min-height:100vh}
+      .topbar{height:auto;align-items:flex-start;flex-direction:column}
+      .top-controls{grid-template-columns:1fr 1fr;width:100%;max-width:none}
+      .game{height:auto;grid-template-columns:1fr;overflow:auto}
+      .field-wrap{height:570px}
+      .center{grid-template-rows:570px auto}
+      .players-list,.team-list{max-height:none;overflow:visible}
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Copa Draft 2026</h1>
-    <p>Monte seu XI por sorteio, jogue 7 partidas em tempo real e dispute artilharia, assistências e melhor da Copa.</p>
-  </header>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">7-0</div>
+        <div>
+          <h1>Copa Draft 2026</h1>
+          <small>Draft + simulação em tela única</small>
+        </div>
+      </div>
 
-  <main>
-    <section class="card" id="setup">
-      <h2>Configuração</h2>
-      <div class="grid grid-4">
-        <label>Formação
-          <select id="formationSelect"></select>
-        </label>
+      <div class="top-controls">
+        <label>Formação<select id="formationSelect"></select></label>
         <label>Estilo
           <select id="styleSelect">
             <option value="equilibrado">Equilibrado</option>
@@ -74,93 +325,93 @@
         </label>
         <label>Dificuldade
           <select id="difficultySelect">
-            <option value="normal">Normal - 3 rerolls</option>
-            <option value="dificil">Difícil - 1 reroll</option>
-            <option value="lendario">Lendário - 0 reroll</option>
+            <option value="normal">Normal</option>
+            <option value="dificil">Difícil</option>
+            <option value="lendario">Lendário</option>
           </select>
         </label>
         <label>Velocidade
           <select id="speedSelect">
-            <option value="2x">2x Normal</option>
-            <option value="1x">1x Lento</option>
-            <option value="5x">5x Rápido</option>
-            <option value="10x">10x Muito rápido</option>
+            <option value="2x">2x</option>
+            <option value="1x">1x</option>
+            <option value="5x">5x</option>
+            <option value="10x">10x</option>
             <option value="instantaneo">Instantâneo</option>
           </select>
         </label>
+        <button class="primary" id="startBtn">Novo jogo</button>
+        <button id="resetRankingBtn">Limpar</button>
       </div>
-      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
-        <button class="primary" id="startBtn">Começar draft</button>
-        <button id="resetRankingBtn">Limpar ranking local</button>
-      </div>
-    </section>
+    </div>
 
-    <section class="card hidden" id="draft">
-      <div class="scoreboard">
-        <div>
-          <h2>Draft</h2>
-          <div class="status" id="draftStatus"></div>
+    <div class="game">
+      <section class="panel left-panel">
+        <div class="panel-head">
+          <div>
+            <h2 id="leftTitle">Sorteio</h2>
+            <div class="status-line" id="draftStatus">Clique em Novo jogo</div>
+          </div>
+          <span class="pill" id="rerollPill">Reroll 0</span>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="warn" id="rerollBtn">Reroll seleção</button>
-          <button class="primary" id="finishDraftBtn" disabled>Ir para simulação</button>
+        <div class="panel-body">
+          <h2 id="currentTeamTitle" style="font-size:15px;margin:0 0 8px">Seleção</h2>
+          <div class="players-list" id="playersList"></div>
         </div>
-      </div>
-      <hr style="border-color:var(--line);opacity:.4">
-      <h3 id="currentTeamTitle"></h3>
-      <div class="players" id="playersList"></div>
-    </section>
+        <div class="draft-actions">
+          <button class="warn" id="rerollBtn">Reroll</button>
+          <button class="primary" id="finishDraftBtn" disabled>Simular</button>
+        </div>
+      </section>
 
-    <section class="card hidden" id="squad">
-      <h2>Seu time</h2>
-      <div class="status" id="teamPower"></div>
-      <div class="field" id="fieldSlots"></div>
-    </section>
+      <section class="center">
+        <div class="field-wrap">
+          <div class="field"></div>
+          <div class="mid-circle"></div>
+          <div class="box-top"></div>
+          <div class="box-bottom"></div>
+          <div class="small-top"></div>
+          <div class="small-bottom"></div>
+          <div id="fieldSlots"></div>
+        </div>
 
-    <section class="card hidden" id="match">
-      <div class="scoreboard">
-        <div>
-          <h2 id="matchPhase">Partida</h2>
-          <div class="status" id="matchInfo"></div>
+        <div class="score-panel">
+          <div class="team-label">Seu Time<small id="teamPower">Força -</small></div>
+          <div>
+            <div class="score-big" id="scoreText">0 x 0</div>
+            <div class="time-row">
+              <span class="pill" id="matchPhase">Draft</span>
+              <span class="pill" id="minutePill">0'</span>
+              <span class="pill" id="shotsPill">Finalizações 0 x 0</span>
+            </div>
+            <div class="goal-feed" id="goalFeed">Monte seu time escolhendo 1 jogador por seleção sorteada.</div>
+          </div>
+          <div class="team-label" style="text-align:right" id="opponentName">Adversário<small id="matchInfo">-</small></div>
         </div>
-        <div class="score" id="scoreText">0 x 0</div>
-        <button class="primary" id="nextMatchBtn" disabled>Próxima partida</button>
-      </div>
-      <div style="margin-top:12px" class="tabs">
-        <span class="pill" id="minutePill">0'</span>
-        <span class="pill" id="shotsPill">Finalizações 0 x 0</span>
-        <span class="pill" id="possessionPill">Posse 50% x 50%</span>
-      </div>
-      <h3 style="margin-top:16px">Eventos</h3>
-      <div class="events" id="eventsList"></div>
-    </section>
+      </section>
 
-    <section class="card hidden" id="tables">
-      <h2>Estatísticas da Copa</h2>
-      <div class="grid grid-3">
-        <div>
-          <h3>Artilharia</h3>
-          <div id="scorersTable"></div>
+      <section class="panel right-panel">
+        <div class="panel-head">
+          <div>
+            <h2>Time & Ranking</h2>
+            <div class="status-line" id="smallStatus">0/11 jogadores</div>
+          </div>
+          <div class="mini-tabs">
+            <button id="tabTeamBtn">Time</button>
+            <button id="tabGoalsBtn">Gols</button>
+            <button id="tabAstBtn">Assist.</button>
+          </div>
         </div>
-        <div>
-          <h3>Assistências</h3>
-          <div id="assistsTable"></div>
-        </div>
-        <div>
-          <h3>Melhores jogadores</h3>
-          <div id="bestTable"></div>
-        </div>
-      </div>
-    </section>
 
-    <section class="card hidden" id="result">
-      <h2>Resultado final</h2>
-      <div id="resultText" class="status"></div>
-      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-        <button class="primary" onclick="location.reload()">Jogar novamente</button>
-      </div>
-    </section>
-  </main>
+        <div class="panel-body">
+          <div class="team-list" id="teamList"></div>
+        </div>
+
+        <div class="tables-box" id="tablesBox">
+          <div class="status-line">As estatísticas aparecem durante a simulação.</div>
+        </div>
+      </section>
+    </div>
+  </div>
 
   <script src="worldcup-data.js"></script>
   <script src="game-engine.js"></script>
