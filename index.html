@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Copa Draft 2026</title>
+  <style>
+    :root{
+      --bg:#07111f;--card:#0f1f35;--card2:#132844;--text:#f3f7ff;--muted:#9fb0c7;
+      --line:rgba(255,255,255,.12);--accent:#20d47b;--danger:#ff4d6d;--warn:#ffd166;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#123055,#07111f 55%);color:var(--text)}
+    header{padding:22px 16px;text-align:center;border-bottom:1px solid var(--line)}
+    header h1{margin:0;font-size:28px}
+    header p{margin:8px 0 0;color:var(--muted)}
+    main{max-width:1180px;margin:auto;padding:16px;display:grid;gap:16px}
+    .card{background:linear-gradient(180deg,var(--card),rgba(15,31,53,.86));border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 18px 50px rgba(0,0,0,.25)}
+    .grid{display:grid;gap:12px}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    @media(max-width:800px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr} header h1{font-size:23px}}
+    button,select{border:0;border-radius:12px;padding:12px 14px;background:var(--card2);color:var(--text);font-weight:700}
+    button{cursor:pointer;border:1px solid var(--line)}
+    button:hover{filter:brightness(1.12)}
+    button.primary{background:linear-gradient(135deg,#16c172,#27e38b);color:#03130b}
+    button.danger{background:linear-gradient(135deg,#ff4d6d,#ff7a59);color:#fff}
+    button.warn{background:linear-gradient(135deg,#ffd166,#ffb703);color:#1d1200}
+    button:disabled{opacity:.45;cursor:not-allowed}
+    label{display:grid;gap:7px;color:var(--muted);font-size:13px}
+    h2,h3{margin:0 0 12px}
+    .pill{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.06);font-size:12px;color:var(--muted)}
+    .hidden{display:none!important}
+    .players{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+    .player{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:8px}
+    .player strong{font-size:15px}
+    .player small{color:var(--muted)}
+    .overall{font-weight:900;color:var(--accent)}
+    .field{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}
+    .slot{min-height:84px;border:1px dashed rgba(255,255,255,.25);border-radius:14px;padding:10px;background:rgba(0,0,0,.12)}
+    .slot b{display:block;color:var(--warn);margin-bottom:6px}
+    .slot .empty{color:var(--muted)}
+    .scoreboard{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .score{font-size:34px;font-weight:900}
+    .events{max-height:260px;overflow:auto;display:grid;gap:8px}
+    .event{padding:9px 10px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+    table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:12px}
+    th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
+    th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .status{color:var(--muted);line-height:1.45}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Copa Draft 2026</h1>
+    <p>Monte seu XI por sorteio, jogue 7 partidas em tempo real e dispute artilharia, assistências e melhor da Copa.</p>
+  </header>
+
+  <main>
+    <section class="card" id="setup">
+      <h2>Configuração</h2>
+      <div class="grid grid-4">
+        <label>Formação
+          <select id="formationSelect"></select>
+        </label>
+        <label>Estilo
+          <select id="styleSelect">
+            <option value="equilibrado">Equilibrado</option>
+            <option value="ofensivo">Ofensivo</option>
+            <option value="defensivo">Defensivo</option>
+          </select>
+        </label>
+        <label>Dificuldade
+          <select id="difficultySelect">
+            <option value="normal">Normal - 3 rerolls</option>
+            <option value="dificil">Difícil - 1 reroll</option>
+            <option value="lendario">Lendário - 0 reroll</option>
+          </select>
+        </label>
+        <label>Velocidade
+          <select id="speedSelect">
+            <option value="2x">2x Normal</option>
+            <option value="1x">1x Lento</option>
+            <option value="5x">5x Rápido</option>
+            <option value="10x">10x Muito rápido</option>
+            <option value="instantaneo">Instantâneo</option>
+          </select>
+        </label>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="primary" id="startBtn">Começar draft</button>
+        <button id="resetRankingBtn">Limpar ranking local</button>
+      </div>
+    </section>
+
+    <section class="card hidden" id="draft">
+      <div class="scoreboard">
+        <div>
+          <h2>Draft</h2>
+          <div class="status" id="draftStatus"></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="warn" id="rerollBtn">Reroll seleção</button>
+          <button class="primary" id="finishDraftBtn" disabled>Ir para simulação</button>
+        </div>
+      </div>
+      <hr style="border-color:var(--line);opacity:.4">
+      <h3 id="currentTeamTitle"></h3>
+      <div class="players" id="playersList"></div>
+    </section>
+
+    <section class="card hidden" id="squad">
+      <h2>Seu time</h2>
+      <div class="status" id="teamPower"></div>
+      <div class="field" id="fieldSlots"></div>
+    </section>
+
+    <section class="card hidden" id="match">
+      <div class="scoreboard">
+        <div>
+          <h2 id="matchPhase">Partida</h2>
+          <div class="status" id="matchInfo"></div>
+        </div>
+        <div class="score" id="scoreText">0 x 0</div>
+        <button class="primary" id="nextMatchBtn" disabled>Próxima partida</button>
+      </div>
+      <div style="margin-top:12px" class="tabs">
+        <span class="pill" id="minutePill">0'</span>
+        <span class="pill" id="shotsPill">Finalizações 0 x 0</span>
+        <span class="pill" id="possessionPill">Posse 50% x 50%</span>
+      </div>
+      <h3 style="margin-top:16px">Eventos</h3>
+      <div class="events" id="eventsList"></div>
+    </section>
+
+    <section class="card hidden" id="tables">
+      <h2>Estatísticas da Copa</h2>
+      <div class="grid grid-3">
+        <div>
+          <h3>Artilharia</h3>
+          <div id="scorersTable"></div>
+        </div>
+        <div>
+          <h3>Assistências</h3>
+          <div id="assistsTable"></div>
+        </div>
+        <div>
+          <h3>Melhores jogadores</h3>
+          <div id="bestTable"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card hidden" id="result">
+      <h2>Resultado final</h2>
+      <div id="resultText" class="status"></div>
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="primary" onclick="location.reload()">Jogar novamente</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="worldcup-data.js"></script>
+  <script src="game-engine.js"></script>
+</body>
+</html>
